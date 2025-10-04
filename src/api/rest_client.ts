@@ -7,8 +7,6 @@ import { Logger } from 'homebridge';
 import { MemoizeExpiring } from 'typescript-memoize';
 import { Retryable, BackOffPolicy } from 'typescript-retry-decorator';
 import https from 'https';
-import path from 'path';
-import fs from 'fs';
 
 export class InfinityRestClient {
   private access_token = '';
@@ -18,10 +16,9 @@ export class InfinityRestClient {
       public username: string,
       private password: string,
       public readonly log: Logger) {
-    const caBundlePath = path.resolve(__dirname, 'certs/app-api-ing-carrier-ca-bundle.pem');
 
     const httpsAgent = new https.Agent({
-      ca: fs.readFileSync(caBundlePath, 'utf8'), // one file, many PEM blocks
+      rejectUnauthorized: false, // Allow self-signed or untrusted certificates
       secureProtocol: 'TLSv1_2_method', // Use TLS 1.2 for compatibility
     });
 
