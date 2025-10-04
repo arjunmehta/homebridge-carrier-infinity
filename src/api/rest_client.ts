@@ -18,15 +18,11 @@ export class InfinityRestClient {
       public username: string,
       private password: string,
       public readonly log: Logger) {
-    // Create HTTPS agent with relaxed certificate validation for Carrier API compatibility
-    // This addresses Node.js 22+ stricter TLS validation that causes "unable to get local issuer certificate" errors
     const caBundlePath = path.resolve(__dirname, 'certs/app-api-ing-carrier-ca-bundle.pem');
 
     const httpsAgent = new https.Agent({
       ca: fs.readFileSync(caBundlePath, 'utf8'), // one file, many PEM blocks
-      minVersion: 'TLSv1.2',
-      // Note: secureProtocol and minVersion are mutually exclusive
-      // Using minVersion is preferred as it's more flexible
+      secureProtocol: 'TLSv1_2_method', // Use TLS 1.2 for compatibility
     });
 
     this.axios = Axios.create({
@@ -61,8 +57,7 @@ export class InfinityRestClient {
               error.code === 'CERT_HAS_EXPIRED' ||
               error.code === 'UNABLE_TO_GET_ISSUER_CERT' ||
               error.message.includes('unable to get local issuer certificate')) {
-            this.log.warn('TLS Certificate validation issue detected. This may be due to Node.js 22+ stricter certificate validation.');
-            this.log.warn('The plugin has been configured to handle this automatically.');
+            this.log.warn('TLS Certificate validation issue detected.');
           }
         }
         return Promise.reject(error); // this makes http errors raise
