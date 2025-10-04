@@ -2,9 +2,10 @@ import { CarrierInfinityHomebridgePlatform } from './platform';
 import { AccessoryInformation, CharacteristicWrapper, MultiWrapper } from './characteristics_base';
 import { convertSystemTemp2CharTemp } from './helpers';
 import { BaseAccessory } from './accessory_base';
+import { WithUUID, Characteristic } from 'homebridge';
 
 class OATSensorTemp extends CharacteristicWrapper {
-  ctype = this.Characteristic.CurrentTemperature;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.CurrentTemperature;
   get = async () => {
     return convertSystemTemp2CharTemp(
       await this.system.status.getOutdoorTemp(),

@@ -2,6 +2,7 @@ import { CharacteristicValue } from 'homebridge';
 import { ThermostatCharacteristicWrapper, MultiWrapper } from './characteristics_base';
 import { convertCharFan2SystemFan, convertSystemFan2CharFan } from './helpers';
 import { FAN_MODE, SYSTEM_MODE } from './api/constants';
+import { WithUUID, Characteristic } from 'homebridge';
 
 /*
  * Controls for system fan.
@@ -21,7 +22,7 @@ import { FAN_MODE, SYSTEM_MODE } from './api/constants';
  */
 
 class FanStatus extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.Active;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.Active;
   get = async () => {
     if (
       // if the system is configured to be off, the fan must be off
@@ -72,7 +73,7 @@ class FanStatus extends ThermostatCharacteristicWrapper {
 }
 
 class FanState extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.CurrentFanState;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.CurrentFanState;
   get = async () => {
     if (
       // if the system is configured to be off, the fan must be off
@@ -101,7 +102,7 @@ class FanState extends ThermostatCharacteristicWrapper {
 }
 
 class FanSpeed extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.RotationSpeed;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.RotationSpeed;
   props = {minValue: 0, maxValue: 3, minStep: 1};
 
   get = async () => {
@@ -128,7 +129,7 @@ class FanSpeed extends ThermostatCharacteristicWrapper {
 }
 
 class TargetFanState extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.TargetFanState;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.TargetFanState;
 
   get = async () => {
     return await this.system.config.getZoneActivityFan(

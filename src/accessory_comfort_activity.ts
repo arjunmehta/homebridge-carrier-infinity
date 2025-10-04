@@ -2,10 +2,10 @@ import { CarrierInfinityHomebridgePlatform } from './platform';
 import { AccessoryInformation, ThermostatCharacteristicWrapper } from './characteristics_base';
 import { BaseAccessory } from './accessory_base';
 import { ACTIVITY, STATUS } from './api/constants';
-import { CharacteristicValue, UnknownContext } from 'homebridge';
+import { CharacteristicValue, UnknownContext, WithUUID, Characteristic } from 'homebridge';
 
 class Activity extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.On;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.On;
 
   constructor(
     public readonly platform: CarrierInfinityHomebridgePlatform,
@@ -43,7 +43,7 @@ class Activity extends ThermostatCharacteristicWrapper {
 // the manual activity. Instead activating this switch turns on a hold for the
 // current activity. To hold to the manual activity, just change the temp.
 class HoldActivity extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.On;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.On;
 
   get = async () => {
     const zone = await this.system.config.getZoneHoldStatus(this.context.zone);

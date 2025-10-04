@@ -2,9 +2,10 @@ import { CharacteristicValue } from 'homebridge';
 import { ThermostatCharacteristicWrapper, MultiWrapper } from './characteristics_base';
 import { convertCharTemp2SystemTemp, convertSystemTemp2CharTemp } from './helpers';
 import { FAN_MODE, SYSTEM_MODE } from './api/constants';
+import { WithUUID, Characteristic } from 'homebridge';
 
 class CurrentACStatus extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.CurrentHeatingCoolingState;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.CurrentHeatingCoolingState;
   get = async () => {
     const current_state = await this.system.status.getZoneConditioning(this.context.zone);
     switch(current_state) {
@@ -23,7 +24,7 @@ class CurrentACStatus extends ThermostatCharacteristicWrapper {
 }
 
 class TargetACState extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.TargetHeatingCoolingState;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.TargetHeatingCoolingState;
   get = async () => {
     const target_state = await this.system.config.getMode();
     switch(target_state) {
@@ -67,7 +68,7 @@ class TargetACState extends ThermostatCharacteristicWrapper {
 }
 
 class DisplayUnits extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.TemperatureDisplayUnits;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.TemperatureDisplayUnits;
   get = async () => {
     return await this.system.config.getUnits() === 'F' ?
       this.Characteristic.TemperatureDisplayUnits.FAHRENHEIT :
@@ -76,7 +77,7 @@ class DisplayUnits extends ThermostatCharacteristicWrapper {
 }
 
 class CurrentTemp extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.CurrentTemperature;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.CurrentTemperature;
   get = async () => {
     return convertSystemTemp2CharTemp(
       await this.system.status.getZoneTemp(this.context.zone),
@@ -86,7 +87,7 @@ class CurrentTemp extends ThermostatCharacteristicWrapper {
 }
 
 class CoolSetpoint extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.CoolingThresholdTemperature;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.CoolingThresholdTemperature;
   get = async () => {
     return convertSystemTemp2CharTemp(
       await this.system.config.getZoneActivityCoolSetpoint(this.context.zone, await this.getActivity()),
@@ -105,7 +106,7 @@ class CoolSetpoint extends ThermostatCharacteristicWrapper {
 }
 
 class HeatSetpoint extends ThermostatCharacteristicWrapper {
-  ctype = this.Characteristic.HeatingThresholdTemperature;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.HeatingThresholdTemperature;
   default_value = 10;
 
   get = async () => {
@@ -130,7 +131,7 @@ class GeneralSetpoint extends ThermostatCharacteristicWrapper {
    * HomeKit always sends this action. But we only use it when in a non-range
    * system mode (i.e. heat or cool, not auto).
    */
-  ctype = this.Characteristic.TargetTemperature;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.TargetTemperature;
   get = async () => {
     const mode = await this.system.config.getMode();
     const activity = await this.getActivity();

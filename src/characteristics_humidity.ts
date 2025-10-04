@@ -1,18 +1,19 @@
 import { CharacteristicWrapper, MultiWrapper } from './characteristics_base';
+import { WithUUID, Characteristic } from 'homebridge';
 
 class CurrentRH extends CharacteristicWrapper {
-  ctype = this.Characteristic.CurrentRelativeHumidity;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.CurrentRelativeHumidity;
   get = async () => {
     return await this.system.status.getZoneHumidity(this.context.zone);
   };
 }
 
 class TargetDehumidify extends CharacteristicWrapper {
-  ctype = this.Characteristic.RelativeHumidityDehumidifierThreshold;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.RelativeHumidityDehumidifierThreshold;
 }
 
 class TargetHumidify extends CharacteristicWrapper {
-  ctype = this.Characteristic.RelativeHumidityHumidifierThreshold;
+  ctype: WithUUID<new () => Characteristic> = this.Characteristic.RelativeHumidityHumidifierThreshold;
 }
 
 
