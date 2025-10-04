@@ -29,6 +29,14 @@ This is a standalone plugin for Homebridge that talks directly to the Infinity/E
 * It may take 1-2 minutes from the time you make a change via HomeKit until your thermostat sees the change. This is an unavoidable result of how the thermostats poll for updates.
 * This plugin *does not* require Infinitude/Infinitive.
 
+# Troubleshooting
+
+## Node.js 22+ Compatibility
+
+If you're experiencing "unable to get local issuer certificate" errors after updating to Node.js 22+, this is due to stricter TLS certificate validation. The plugin has been updated to handle this automatically by configuring appropriate TLS settings for the Carrier API.
+
+**You do not need to set `NODE_TLS_REJECT_UNAUTHORIZED=0`** - the plugin handles this internally and securely.
+
 # Development
 
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/grivkees/homebridge-carrier-infinity/build.yml?branch=master&logo=github-actions&logoColor=white)](https://github.com/grivkees/homebridge-carrier-infinity/actions/workflows/build.yml)

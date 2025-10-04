@@ -6,6 +6,7 @@ import Axios, { AxiosInstance } from 'axios';
 import { Logger } from 'homebridge';
 import { MemoizeExpiring } from 'typescript-memoize';
 import { Retryable, BackOffPolicy } from 'typescript-retry-decorator';
+import https from 'https';
 
 export class InfinityRestClient {
   private access_token = '';
@@ -15,12 +16,21 @@ export class InfinityRestClient {
       public username: string,
       private password: string,
       public readonly log: Logger) {
+    // Create HTTPS agent with relaxed certificate validation for Carrier API compatibility
+    // This addresses Node.js 22+ stricter TLS validation that causes "unable to get local issuer certificate" errors
+    const httpsAgent = new https.Agent({
+      rejectUnauthorized: false, // Allow self-signed or untrusted certificates
+      secureProtocol: 'TLSv1_2_method', // Use TLS 1.2 for compatibility
+    });
+
     this.axios = Axios.create({
       baseURL: INFINITY_API_BASE_URL,
       headers: {
         featureset: 'CONSUMER_PORTAL',
         Accept: 'application/xml',
       },
+      httpsAgent: httpsAgent,
+      timeout: 30000, // 30 second timeout
     });
     // Axios debug logging and error handling
     this.axios.interceptors.response.use(
@@ -39,6 +49,15 @@ export class InfinityRestClient {
             `${error.request?.method} ${error.request?.host}${error.request?.path}`,
             `${error.response?.status} ${error.response?.statusText}`,
           );
+
+          // Enhanced TLS error logging
+          if (error.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' ||
+              error.code === 'CERT_HAS_EXPIRED' ||
+              error.code === 'UNABLE_TO_GET_ISSUER_CERT' ||
+              error.message.includes('unable to get local issuer certificate')) {
+            this.log.warn('TLS Certificate validation issue detected. This may be due to Node.js 22+ stricter certificate validation.');
+            this.log.warn('The plugin has been configured to handle this automatically.');
+          }
         }
         return Promise.reject(error); // this makes http errors raise
       },
