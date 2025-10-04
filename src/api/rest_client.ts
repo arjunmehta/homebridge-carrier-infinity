@@ -20,7 +20,7 @@ export class InfinityRestClient {
       public readonly log: Logger) {
     // Create HTTPS agent with relaxed certificate validation for Carrier API compatibility
     // This addresses Node.js 22+ stricter TLS validation that causes "unable to get local issuer certificate" errors
-    const caBundlePath = path.join(process.cwd(), 'certs', 'app-api-ing-carrier-ca-bundle.pem');
+    const caBundlePath = path.resolve(__dirname, 'certs/app-api-ing-carrier-ca-bundle.pem');
 
     const httpsAgent = new https.Agent({
       ca: fs.readFileSync(caBundlePath, 'utf8'), // one file, many PEM blocks
