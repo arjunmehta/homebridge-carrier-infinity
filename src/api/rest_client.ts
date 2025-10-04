@@ -25,7 +25,8 @@ export class InfinityRestClient {
     const httpsAgent = new https.Agent({
       ca: fs.readFileSync(caBundlePath, 'utf8'), // one file, many PEM blocks
       minVersion: 'TLSv1.2',
-      secureProtocol: 'TLSv1_2_method', // Use TLS 1.2 for compatibility
+      // Note: secureProtocol and minVersion are mutually exclusive
+      // Using minVersion is preferred as it's more flexible
     });
 
     this.axios = Axios.create({
