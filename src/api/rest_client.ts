@@ -18,7 +18,7 @@ export class InfinityRestClient {
       public readonly log: Logger) {
 
     const httpsAgent = new https.Agent({
-      rejectUnauthorized: false, // Allow self-signed or untrusted certificates
+      rejectUnauthorized: true, // Allow self-signed or untrusted certificates
       secureProtocol: 'TLSv1_2_method', // Use TLS 1.2 for compatibility
     });
 
