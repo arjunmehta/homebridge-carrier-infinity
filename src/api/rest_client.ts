@@ -7,6 +7,8 @@ import { Logger } from 'homebridge';
 import { MemoizeExpiring } from 'typescript-memoize';
 import { Retryable, BackOffPolicy } from 'typescript-retry-decorator';
 import https from 'https';
+import path from 'path';
+import fs from 'fs';
 
 export class InfinityRestClient {
   private access_token = '';
@@ -18,8 +20,11 @@ export class InfinityRestClient {
       public readonly log: Logger) {
     // Create HTTPS agent with relaxed certificate validation for Carrier API compatibility
     // This addresses Node.js 22+ stricter TLS validation that causes "unable to get local issuer certificate" errors
+    const caBundlePath = path.join(process.cwd(), 'certs', 'app-api-ing-carrier-ca-bundle.pem');
+
     const httpsAgent = new https.Agent({
-      rejectUnauthorized: false, // Allow self-signed or untrusted certificates
+      ca: fs.readFileSync(caBundlePath, 'utf8'), // one file, many PEM blocks
+      minVersion: 'TLSv1.2',
       secureProtocol: 'TLSv1_2_method', // Use TLS 1.2 for compatibility
     });
 
